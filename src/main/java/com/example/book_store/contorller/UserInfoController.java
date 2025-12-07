@@ -16,9 +16,15 @@ public class UserInfoController {
     @Autowired
     UserInfoService userInfoService;
 
-    @PostMapping("register")
+
+    @PostMapping("/register")
     public ResponseEntity<String> createUserInfo(@RequestBody UserInfoDto userInfoDto) {
         UserInfoDto userInfoDto1 = userInfoService.createUser(userInfoDto);
         return new ResponseEntity<>("User " + userInfoDto1.userName() + " is Created ", HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> getUserInfo(@RequestBody UserInfoDto userInfoDto){
+        return new ResponseEntity<>(userInfoService.getUserInfo(userInfoDto),HttpStatus.OK);
     }
 }
