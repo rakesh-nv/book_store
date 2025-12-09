@@ -9,6 +9,6 @@ public interface BookService {
     public BookDto getBook(String bookId);
     public List<BookDto> getAllBooks();
     public BookDto createBook(BookDto bookDto);
-    public BookDto updateBookName(BookDto bookDto);
+    public BookDto updateBookName(BookDto bookDto, String bookId);
     public void deleteBookByBookId(String BookId);
 }

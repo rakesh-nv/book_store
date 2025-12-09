@@ -37,17 +37,16 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookDto createBook(BookDto bookDto) {
-        Book mapped = BookMapper.toEntity(bookDto);
-        // Ensure we don't insert a duplicated _id: let MongoDB generate ObjectId when creating
-        Book toInsert = new Book(null, mapped.name(), mapped.price(), mapped.author(), mapped.description());
+        // Create book without bookId - MongoDB will auto-generate _id
+        Book toInsert = new Book(null, bookDto.name(), bookDto.price(), bookDto.author(), bookDto.description());
         Book book = bookRepository.insert(toInsert);
         return BookMapper.toDto(book);
     }
 
     @Override
-    public BookDto updateBookName(BookDto bookDto) {
-        bookRepository.updateBookNameByBookId(bookDto.bookId(), bookDto.name());
-        Book book = bookRepository.findBookBookById(bookDto.bookId());
+    public BookDto updateBookName(BookDto bookDto,String bookId) {
+        bookRepository.updateBookNameByBookId(bookId, bookDto.name());
+        Book book = bookRepository.findBookBookById(bookId);
         return BookMapper.toDto(book);
     }
 

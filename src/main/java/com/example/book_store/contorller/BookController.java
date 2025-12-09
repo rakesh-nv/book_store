@@ -1,6 +1,7 @@
 package com.example.book_store.contorller;
 
 import com.example.book_store.dto.BookDto;
+import com.example.book_store.response.ResponseHandler;
 import com.example.book_store.service.BookService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,18 +27,20 @@ public class BookController {
 
     @GetMapping("/{bookId}")
     @PreAuthorize("hasRole('USER')")
-
-    public ResponseEntity<BookDto> getBook(@PathVariable String bookId) {
+    public ResponseEntity<Object> getBook(@PathVariable String bookId) {
         BookDto bookDto = bookService.getBook(bookId);
-        return new ResponseEntity<>(bookDto, HttpStatus.OK);
+        return ResponseHandler.responseBuilder("SUCCESS", HttpStatus.OK, bookDto);
+//        return new ResponseEntity<>(bookDto, HttpStatus.OK);
     }
 
     @GetMapping("/")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<BookDto>> getAllBooks() {
+//    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Object> getAllBooks() {
         List<BookDto> bookDtosList = bookService.getAllBooks();
-        return new ResponseEntity<>(bookDtosList, HttpStatus.OK);
+        return ResponseHandler.responseBuilder("SUCCESS", HttpStatus.OK, bookDtosList);
+//        return new ResponseEntity<>(bookDtosList, HttpStatus.OK);
     }
+
     @PostMapping("/")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<BookDto> createBooks(@RequestBody BookDto bookDto) {
@@ -45,10 +48,10 @@ public class BookController {
         return new ResponseEntity<>(book, HttpStatus.OK);
     }
 
-    @PutMapping("/")
+    @PutMapping("/{bookId}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<BookDto> updateBook(@RequestBody BookDto bookDto) {
-        BookDto bookDto1 = bookService.updateBookName(bookDto);
+    public ResponseEntity<BookDto> updateBook(@RequestBody BookDto bookDto, @PathVariable String bookId) {
+        BookDto bookDto1 = bookService.updateBookName(bookDto, bookId);
         return new ResponseEntity<>(bookDto1, HttpStatus.OK);
     }
 

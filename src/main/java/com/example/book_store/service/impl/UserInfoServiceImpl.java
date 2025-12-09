@@ -13,6 +13,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class UserInfoServiceImpl implements UserInfoService {
 
@@ -20,7 +23,6 @@ public class UserInfoServiceImpl implements UserInfoService {
     UserInfoRepository userInfoRepository;
     @Autowired
     public PasswordEncoder passwordEncoder;
-
     @Autowired
     public AuthenticationManager authenticationManager;
 
@@ -31,13 +33,14 @@ public class UserInfoServiceImpl implements UserInfoService {
     public UserInfoDto createUser(UserInfoDto userInfoDto) {
         UserInfo userInfo = UserInfoMapper.toEntity(userInfoDto);
         userInfo.setPassword(passwordEncoder.encode(userInfo.getPassword()));
-        userInfoRepository.save(userInfo);
-        return UserInfoMapper.toDto(userInfo);
+        UserInfo savedUser = userInfoRepository.save(userInfo);
+        return UserInfoMapper.toDto(savedUser);
     }
 
     @Override
     public String getUserInfo(UserInfoDto userInfoDto) {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
                         userInfoDto.userName(),
                         userInfoDto.password()
                 )
@@ -46,5 +49,30 @@ public class UserInfoServiceImpl implements UserInfoService {
             return jwtService.generateToken(userInfoDto.userName());
         }
         return "Failure";
+    }
+
+    @Override
+    public List<UserInfoDto> getAllUsers() {
+        List<UserInfo> userInfoList = userInfoRepository.findAll();
+        List<UserInfoDto> userInfoDtoList = new ArrayList<>();
+        for(UserInfo userInfo : userInfoList){
+            userInfoDtoList.add(UserInfoMapper.toDto(userInfo));
+        }
+        return userInfoDtoList;
+    }
+
+    @Override
+    public void deleteUserByUserId(String userId) {
+        userInfoRepository.deleteById(userId);
+    }
+
+    @Override
+    public void deleteCurrentUser(String jwtToken) {
+        String userName = jwtService.extractUserName(jwtToken);
+        userInfoRepository.findByUserName(userName)
+                .ifPresentOrElse(
+                        userInfoRepository::delete,
+                        () -> { throw new org.springframework.security.core.userdetails.UsernameNotFoundException("User not found"); }
+                );
     }
 }

@@ -8,14 +8,15 @@ import org.springframework.data.mongodb.repository.Update;
 
 public interface BookRepository extends MongoRepository<Book, String> {
 
-    @Query("{ 'bookId' : ?0 }")
+    // bookId field maps to MongoDB's _id field automatically
+    @Query("{ '_id' : ?0 }")
     Book findBookBookById(String bookId);
 
-    @Query("{ 'bookId' : ?0 }")
+    @Query("{ '_id' : ?0 }")
     @Update("{ '$set' : { 'name' : ?1 } }")
     void updateBookNameByBookId(String bookId, String name);
 
-    @DeleteQuery("{ 'bookId' : ?0 }")
+    @DeleteQuery("{ '_id' : ?0 }")
     void deleteBookByBookId(String bookId);
 
 }

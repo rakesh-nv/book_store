@@ -11,6 +11,7 @@ public class BookMapper {
     }
 
     public static Book toEntity(BookDto bookDto){
+        // bookId is null for new books - MongoDB will auto-generate _id
         Book book = new Book(bookDto.bookId(),bookDto.name(),bookDto.price(),bookDto.author(),bookDto.description());
         return book;
     }
